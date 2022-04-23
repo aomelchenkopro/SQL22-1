@@ -170,3 +170,104 @@ create table [LANDING].[Email](
 	   CREATE_DATE  datetime default sysdatetime(), -- Дата внесения номера телефона
 	   EMP_ID       int                        -- Идент. Почты
 );
+--=======================================================================================TARGET===========================================================================
+-- Создание таблицы для хранения данных о должностях
+if OBJECT_ID('[TARGET].[Title]', 'U') is not null drop table [TARGET].[Title];
+create table [TARGET].[Title](
+       TITLE_ID   int primary key,      -- идент. Должности
+	   TITLE_NAME nvarchar(50) not null -- Наименование должности
+);
+
+
+insert into [TARGET].[Title]
+select * 
+  from LANDING.[Title];
+
+truncate table LANDING.[Title];
+	
+-- Создание таблицы для хранения данных о статусах
+if OBJECT_ID('[TARGET].[Status]', 'U') is not null drop table [TARGET].[Status];
+create table [TARGET].[Status](
+       STATUS_ID   int primary key,      -- идент. Статуса 
+	   STATUS_NAME nvarchar(50) not null -- наименование статуса 
+);
+
+insert into [TARGET].[Status]
+select * 
+  from LANDING.[Status];
+
+truncate table LANDING.[Status];
+
+-- Создание таблицы для хранения данных офисов
+if OBJECT_ID('[TARGET].Office', 'U') is not null drop table [TARGET].Office;
+create table [TARGET].Office(
+       REGION_ID       int          not null, -- идент. Региона в котором работает сотрудник
+	   DEP_ID          int          not null,  -- идент. Департамента в котором работает сотрудник
+	   DEP_NAME        nvarchar(50) not null, -- Наименование департамента
+	   DEP_MANAGER_ID  int          null,     -- Идент. Руководителя
+
+	   -- Определение ограничения целостности. Составной первичный ключ таблицы
+	   constraint pk_region_id primary key(REGION_ID, DEP_ID)
+);
+
+-- Опреление внешнего ключа. Office -> Employee
+alter table [TARGET].Office
+	add constraint fk_office_to_emp foreign key (DEP_MANAGER_ID) references [TARGET].Employee (EMP_ID);
+
+insert into [TARGET].Office
+select * 
+  from LANDING.Office 
+;
+
+truncate table LANDING.Office;
+
+-- Создание таблицы для хранения данных сотрудников
+if OBJECT_ID('[TARGET].Employee', 'U') is not null drop table [TARGET].Employee;
+create table [TARGET].Employee(
+       EMP_ID      int primary key,       -- Идент. Сотрудника
+	   [NAME]      nvarchar(50) not null, -- Имя сотрудника
+	   SURNAME     nvarchar(50) not null, -- Фамилия сотрудника
+	   MIDDLE_NAME nvarchar(50) null,     -- Отчество сотрудника
+	   HIRE_DATE   date         not null, -- Дата найма сотрудника
+	   BIRTH_DATE  date         not null, -- Дата рождения сотрудника
+	   TITLE_ID    int          not null foreign key references [TARGET].[Title] (TITLE_ID), -- идент. Должности
+	   STATUS_ID   int          not null foreign key references [TARGET].[Status](STATUS_ID), -- идент. Статуса сотрудника
+	   MANAGER_ID  int          null     foreign key references [TARGET].Employee (EMP_ID),     -- идент. Руководителя
+	   REGION_ID   int          not null, -- идент. Региона в котором работает сотрудник
+	   DEP_ID      int          not null -- идент. Департамента в котором работает сотрудник
+
+	  -- constraint fk_emp_to_office foreign key (REGION_ID, DEP_ID) references [TARGET].Office (REGION_ID, REGION_ID)  
+);
+
+alter table [TARGET].Employee 
+add constraint fk_emp_to_office foreign key (REGION_ID, DEP_ID) references [TARGET].Office;
+
+insert into [TARGET].Employee
+select * 
+  from LANDING.Employee
+
+truncate table LANDING.Employee;
+
+-- Создание таблицы для хранения данных о номерах телефонов
+if OBJECT_ID('[TARGET].[Phone]', 'U') is not null drop table [TARGET].[Phone];
+create table [TARGET].[Phone](
+       PHONE_ID     int primary key,                                                   -- Идент. Телефона
+	   PHONE        nvarchar(50) not null,                                             -- Номер телефона
+	   PHONE_STATUS int not null foreign key references [TARGET].[Status] (STATUS_ID), -- Cтатус телефона 
+	   CREATE_DATE  datetime default sysdatetime(),                                         -- Дата внесения номера телефона
+	   EMP_ID       int not null foreign key references [TARGET].Employee (EMP_ID)     -- Идент. Почты
+);
+
+-- Добавление нового ограничения целостности данных - unique
+alter table [TARGET].[Phone] 
+add constraint unique_phone_number unique (PHONE);
+
+-- Создание таблицы для хранения данных о адресах электронной почты
+if OBJECT_ID('[TARGET].[Email]', 'U') is not null drop table [TARGET].[Email];
+create table [TARGET].[Email](
+       EMAIL_ID     int,                       -- Идент. Телефона
+	   EMAIL        nvarchar(50),              -- Номер телефона
+	   EMAIL_STATUS int foreign key references [TARGET].[Status] (STATUS_ID),  -- Cтатус телефона 
+	   CREATE_DATE  datetime default sysdatetime(), -- Дата внесения номера телефона
+	   EMP_ID       int foreign key references [TARGET].Employee (EMP_ID) -- Идент. Почты
+);
