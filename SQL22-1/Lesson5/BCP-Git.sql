@@ -325,7 +325,19 @@ update l
   from [LANDING].[Title] as l
   inner join [BCP].[Title] as t on t.TITLE_ID = l.TITLE_ID 
 ;
---========================================================================================================================================================================
+
+select l.*, -- * - все столбцы рез. набора данных
+       l.TITLE_ID   as [id],
+	   l.TITLE_NAME as [TITLE]
+  from [LANDING].[Title] as l
+  /*
+  inner join 
+  left outer join 
+  right outer join
+  full outer join 
+  cross join
+  */
+
 -- INSERT - Внесение строк в таблицу
 insert into [BCP].[Title](TITLE_ID, TITLE_NAME)
   values(7, N'Marketing Specialist'),
@@ -335,8 +347,6 @@ insert into [BCP].[Title](TITLE_ID, TITLE_NAME)
 insert into [LANDING].[Title]
 select * 
   from [BCP].[Title];
-
-
 --===========================================================================                                       
 select l.*,                                       
        l.TITLE_ID   as [id],
