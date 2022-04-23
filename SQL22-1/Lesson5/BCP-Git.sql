@@ -296,3 +296,32 @@ delete from l
        from [LANDING].[Title] as l
 	   inner join [BCP].[Title] as b on b.TITLE_ID = l.TITLE_ID
 	   where l.TITLE_ID = 3;
+--========================================================================================================================================================================
+/*
+truncate table [BCP].[Title];
+select * from [BCP].[Title];
+select * from [LANDING].[Title];
+
+truncate table [LANDING].[Title];
+insert into [LANDING].[Title]
+select * 
+  from [BCP].[Title];
+*/
+-- UPDATE - Обновление значений атрибутов строк в таблице
+update [LANDING].[Title]
+   set TITLE_ID = 0
+ where TITLE_ID = 1; 
+
+update [LANDING].[Title]
+   set TITLE_NAME = null
+ where TITLE_NAME != N'Production Supervisor - WC10';
+
+-- Использования соединений в инструкции UPDATE
+update l
+   set l.TITLE_NAME = t.TITLE_NAME--, 
+       --,
+	   --,
+	   --
+  from [LANDING].[Title] as l
+  inner join [BCP].[Title] as t on t.TITLE_ID = l.TITLE_ID 
+;
