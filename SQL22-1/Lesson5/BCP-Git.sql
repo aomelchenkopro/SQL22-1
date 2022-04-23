@@ -335,3 +335,13 @@ insert into [BCP].[Title](TITLE_ID, TITLE_NAME)
 insert into [LANDING].[Title]
 select * 
   from [BCP].[Title];
+
+
+--===========================================================================                                       
+select l.*,                                       
+       l.TITLE_ID   as [id],
+	   l.TITLE_NAME as [TITLE]
+  from [LANDING].[Title] as l
+ where TITLE_ID != 0
+ order by TITLE_ID asc --/desc
+;
