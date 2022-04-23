@@ -325,3 +325,18 @@ update l
   from [LANDING].[Title] as l
   inner join [BCP].[Title] as t on t.TITLE_ID = l.TITLE_ID 
 ;
+-----==========
+select l.*, -- * - все столбцы рез. набора данных
+       l.TITLE_ID   as [id],
+	   l.TITLE_NAME as [TITLE]
+  from [LANDING].[Title] as l
+  /*
+  inner join 
+  left outer join 
+  right outer join
+  full outer join 
+  cross join
+  */
+ where TITLE_ID != 0
+ order by TITLE_ID asc --/desc
+;
