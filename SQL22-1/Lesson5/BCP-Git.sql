@@ -284,3 +284,15 @@ create table [TARGET].[Email](
 --			    UPDATE
 -- MERGE
 --========================================================================================================================================================================
+-- DELETE - Удаление строк из таблицы
+delete from [LANDING].[Title] where TITLE_ID = 1;
+
+delete from [LANDING].[Title] where TITLE_NAME != N'Production Supervisor - WC10';
+
+delete from [LANDING].[Title]; --/ truncate table [LANDING].[Title];
+
+-- Использование соединений в инструкции delete
+delete from l
+       from [LANDING].[Title] as l
+	   inner join [BCP].[Title] as b on b.TITLE_ID = l.TITLE_ID
+	   where l.TITLE_ID = 3;
