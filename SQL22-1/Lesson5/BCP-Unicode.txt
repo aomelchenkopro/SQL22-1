@@ -1,0 +1,12 @@
+bcp SQL221.BCP.Title out C:\Storage\bcp\Title_out_file.txt -c -S 159.224.194.250 -U sa -P rLC9s39J7h -L 3 -F 2
+https://docs.microsoft.com/en-us/sql/tools/bcp-utility?view=sql-server-ver15#L
+https://docs.microsoft.com/en-us/sql/tools/bcp-utility?view=sql-server-ver15#F
+
+Для загрузки кириллицы
+bcp SQL221.BCP.Title in C:\Storage\bcp\Title.txt -t\t -r\n -w -S 159.224.194.250 -U sa -P rLC9s39J7h
+-t\t - разделитель столбцов - tab
+-r\n - разделитель строк - перенос строки
+-w  - использовать кодировку unicode
+Необходимо также сменить, через notepad++, кодировку файла на UTF-16 LE BOM
+
+Collation (параметры сортировки и кодировки) базы данных менять не нужно
