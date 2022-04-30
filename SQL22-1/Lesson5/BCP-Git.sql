@@ -335,3 +335,25 @@ insert into [BCP].[Title](TITLE_ID, TITLE_NAME)
 insert into [LANDING].[Title]
 select * 
   from [BCP].[Title];
+
+
+
+--====================================================ДЗ 5 урок Найда Я.С.=========================================
+
+USE SQL221
+
+select 
+p.color ,count(distinct p.productid) as [Colorqty] 
+	from [Production].[Product] as p
+	where p.color is not null
+	group by p.color
+	having count(distinct p.productid) > 1
+	order by count(distinct p.productid) desc
+GO 
+
+/*Вопросы 
+1) Можно ли обратиться как представлению колонки?
+
+
+
+*/
