@@ -391,7 +391,7 @@ select e3.*
 			                  e3.JobTitle
 						from [HumanResources].[Employee] e3
 					group by e3.JobTitle
-				    order by count(distinct e3.BusinessEntityID) desc)
+				    order by count(distinct e3.BusinessEntityID) desc);
 ;
 --=============================================================================================================================================================== 
 
