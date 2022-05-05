@@ -10,7 +10,7 @@
   https://dataedo.com/samples/html/AdventureWorks/doc/AdventureWorks_2/tables/Sales_SalesOrderHeader_185.html
 - Отсортировать результат по общей сумме заказа (по убыванию)"
 */
-
+Use SQL221
 Select s.CreditCardID,
        count (Distinct s.SalesOrderID) as [CountOrder], 
        sum(s.SubTotal) as [TotalSumOrder],
