@@ -33,3 +33,6 @@ https://dataedo.com/samples/html/AdventureWorks/doc/AdventureWorks_2/tables/Huma
   https://dataedo.com/samples/html/AdventureWorks/doc/AdventureWorks_2/tables/Sales_SalesOrderHeader_185.html
 - Результирующий набора данных содержит: идент. территории, кол-во уникальных заказов 
 - Отсортируйте результат по кол-ву заказов (по убыванию)
+
+Задача 5
+В запросе из задачи 4, замените фукнкции year и month на предикат between.
