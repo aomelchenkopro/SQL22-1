@@ -60,7 +60,7 @@ order by [VSDiffQtyHours] desc;
 /*
 Задача 4
 Напишите запрос, который в разрезе идент. территории ([TerritoryID]) вернет кол-во уникальных заказов. Учитывайте только заказы за октябрь 2011 (year(t1.OrderDate) = 2011  and month(t1.OrderDate) = 10) . 
-Исключите заказы размещенные клиентом через сеть (OnlineOrderFlag != 1). Уникальный идентификационный номер заказа на продажу(SalesOrderNumber) должен начинаться на SO44.
+Исключите заказы размещенные клиентом через сеть (OnlineOrderFlag != 1). Уникальный идентификационный номер заказа на продажу(PurchaseOrderNumber) должен начинаться на PO10 или PO20.
 - Используется таблица [Sales].[SalesOrderHeader].
   https://dataedo.com/samples/html/AdventureWorks/doc/AdventureWorks_2/tables/Sales_SalesOrderHeader_185.html
 - Результирующий набора данных содержит: идент. территории, кол-во уникальных заказов 
@@ -72,13 +72,12 @@ select t1.[TerritoryID],
  where year(t1.OrderDate) = 2011 
    and month(t1.OrderDate) = 10
    and t1.OnlineOrderFlag != 1
-   and t1.SalesOrderNumber like 'SO44%'
+   and (t1.PurchaseOrderNumber like 'PO10%' or t1.PurchaseOrderNumber like 'PO20%')
  group by t1.[TerritoryID]
  order by [orderQty] desc;
 
-
 /*
-Задача 5
+Задача 4.1
 В запросе из задачи 4, замените фукнкции year и month на предикат between.
 */
 select t1.[TerritoryID],
@@ -86,6 +85,7 @@ select t1.[TerritoryID],
   from [Sales].[SalesOrderHeader] as t1
  where t1.OrderDate between '20111001' and '20111031 23:59:59.00'
    and t1.OnlineOrderFlag != 1
-   and t1.SalesOrderNumber like 'SO44%'
+   and (t1.PurchaseOrderNumber like 'PO10%' or t1.PurchaseOrderNumber like 'PO20%')
  group by t1.[TerritoryID]
  order by [orderQty] desc;
+
