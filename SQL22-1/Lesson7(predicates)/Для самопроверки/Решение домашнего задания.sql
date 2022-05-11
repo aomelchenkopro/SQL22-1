@@ -17,7 +17,7 @@ select top 100
 /*
 Задача 2
 Напишите запрос, который вернет список уникальных наименований должностей.
-Исключите сотрудников, которые состоят в браке.
+Исключите сотрудников, которые состоят в браке и сотрудников с пустым атрибутом OrganizationNode.
 - Используется таблица [HumanResources].[Employee]
 - Результирующий набор данных содержит: Наименование должности
 - Задействуйте оператор DISTINCT
@@ -29,12 +29,13 @@ select distinct
        t1.JobTitle
   from [HumanResources].[Employee] as t1 
  where t1.MaritalStatus != N'M'
+   and t1.OrganizationNode is not null
  order by t1.JobTitle asc;
-
 /*
 Задача 3
 Напишите запрос, который в разрезе должности и пола вернет кол-во часов отпуска и кол-во часов отпуска по болезни
 и разницу между ними. Исключите сотрудников с окладом, без участия в коллективном договоре (SalariedFlag != 0). 
+Учитывайте только сотрудников на должностях: North American Sales Manager, European Sales Manager, Sales Representative.
 Исключите группы строк, у которых кол-во часов отпуска больше или равна кол-ву часов отпуска по болезни (общая сумма в разрезе должности и пола).
 - Используется таблица [HumanResources].[Employee]
 - Результирующий набор данных содержит: Наименование должности, пол, кол-во часов отпуска, кол-во часов отпуска по болезни, разницу.
@@ -50,12 +51,12 @@ select t1.JobTitle,
 	   sum(t1.VacationHours) - sum(t1.SickLeaveHours) as [VSDiffQtyHours]
   from [HumanResources].[Employee] as t1
  where t1.SalariedFlag != 0
+   and t1.JobTitle in (N'North American Sales Manager', N'European Sales Manager', N'Sales Representative')
  group by t1.JobTitle,
           t1.Gender
 having sum(t1.VacationHours) < sum(t1.SickLeaveHours)
 order by [VSDiffQtyHours] desc;
-
-
+  
 /*
 Задача 4
 Напишите запрос, который в разрезе идент. территории ([TerritoryID]) вернет кол-во уникальных заказов. Учитывайте только заказы за октябрь 2011 (year(t1.OrderDate) = 2011  and month(t1.OrderDate) = 10) . 
@@ -70,6 +71,20 @@ select t1.[TerritoryID],
   from [Sales].[SalesOrderHeader] as t1
  where year(t1.OrderDate) = 2011 
    and month(t1.OrderDate) = 10
+   and t1.OnlineOrderFlag != 1
+   and t1.SalesOrderNumber like 'SO44%'
+ group by t1.[TerritoryID]
+ order by [orderQty] desc;
+
+
+/*
+Задача 5
+В запросе из задачи 4, замените фукнкции year и month на предикат between.
+*/
+select t1.[TerritoryID],
+       count(distinct t1.[SalesOrderID]) as [orderQty]
+  from [Sales].[SalesOrderHeader] as t1
+ where t1.OrderDate between '20111001' and '20111031 23:59:59.00'
    and t1.OnlineOrderFlag != 1
    and t1.SalesOrderNumber like 'SO44%'
  group by t1.[TerritoryID]
