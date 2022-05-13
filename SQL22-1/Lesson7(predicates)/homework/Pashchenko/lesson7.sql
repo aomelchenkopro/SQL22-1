@@ -57,7 +57,7 @@ select top 100
            and a.JobTitle in (N'North American Sales Manager', N'European Sales Manager', N'Sales Representative')
 group by   a.JobTitle,
            a.Gender
-  having   sum(a.VacationHours) < sum(a.SickLeaveHours)
+  having   sum(a.VacationHours) <= sum(a.SickLeaveHours)
 order by   [QTY] desc
 --==============================
 Задача 4
