@@ -1,4 +1,9 @@
-﻿-- ASCII ( character_expression ) возвращает код ASCII левого символа строки.
+﻿--====================================================================================================================================================
+-- Строковые функции T-SQL
+https://docs.microsoft.com/en-us/sql/t-sql/functions/string-functions-transact-sql?view=sql-server-ver15
+
+
+-- ASCII ( character_expression ) возвращает код ASCII левого символа строки.
 select 't-sql', 
        ascii('t-sql') as [code_value_of_the_eftmost_character ];
 
@@ -197,3 +202,4 @@ DECLARE @CardLast4 NVARCHAR(400) = '9998,9996,9991,9989,9988,9983,9978,9977,9976
 SELECT value  
 FROM STRING_SPLIT(@CardLast4, ',');
 --======================================================================================================================================================================================================
+select * from [Sales].[CreditCard];
