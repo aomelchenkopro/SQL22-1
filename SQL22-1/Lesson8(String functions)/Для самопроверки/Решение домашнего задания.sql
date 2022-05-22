@@ -11,7 +11,7 @@
 select distinct
        top 1
        with ties
-       t1.JobTitle,
+       lower(t1.JobTitle),
 	   len(t1.JobTitle)
   from [HumanResources].[Employee] as t1
  order by len(t1.JobTitle) desc;
@@ -42,7 +42,7 @@ select top 1
 3333, 4444, 5555, 7777. Результирующий набор данных содержит: идент. кредит карты, наименование типа карты (в верхнем регистре),
 номер карты (6 цифр начиная с 5 цифры заменено на * ), срок действия карты в формате YYYYMM (задействуйте функцию format https://docs.microsoft.com/ru-ru/dotnet/standard/base-types/custom-numeric-format-strings)
  - Используется таблица [Sales].[CreditCard]
- - Задействуйте строковые функции: right, upper, stuff, concat, format
+ - Задействуйте строковые функции: left, upper, stuff, concat, format
  - Задействуйте предикат принадлежности множеству - in 
  - Отсортировать рез. набор данных по сроку действия карты (по убыванию)
  - Ссылки на описание таблицы и документацию функций
@@ -56,7 +56,7 @@ select t1.CreditCardID,
 	   stuff(t1.CardNumber, 5, 6, '******') as [cardNumber],	
 	   concat(expYear, format(ExpMonth, '00')) as [expPeriod]
   from [Sales].[CreditCard] as t1
- where right(t1.CardNumber, 4) in ('1111','3333', '4444', '5555', '7777')
+ where left(t1.CardNumber, 4) in ('1111','3333', '4444', '5555', '7777')
  order by t1.expYear desc, t1.ExpMonth desc;
 
 /*

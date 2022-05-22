@@ -42,7 +42,7 @@ select s.CreditCardID,
 	   stuff(s.CardNumber, 5, 6, '******') ,	
 	   concat(expYear, format(ExpMonth, '00')) 
   from [Sales].[CreditCard] as s
- where right(s.CardNumber, 4) in ('1111','3333', '4444', '5555', '7777')
+ where left(s.CardNumber, 4) in (N'1111',N'3333', N'4444', N'5555', N'7777')
  order by s.expYear desc, s.ExpMonth desc;
 go
 
@@ -59,4 +59,5 @@ select top 1
 	   substring(e.EmailAddress, 1, charindex(N'@', e.EmailAddress)-1) ,
 	   len(substring(e.EmailAddress, 1, charindex(N'@', e.EmailAddress)-1))
   from [Person].[EmailAddress] e
+   where lower(left(e.EmailAddress, 1)) not in (N'j', N's')
  order by len(substring(e.EmailAddress, 1, charindex('@', e.EmailAddress)-1)) desc;
