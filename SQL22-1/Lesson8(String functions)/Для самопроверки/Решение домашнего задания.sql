@@ -8,13 +8,18 @@
 - Описание таблицы можно видеть по ссылке
   https://dataedo.com/samples/html/AdventureWorks/doc/AdventureWorks_2/modules/Human_Resources_9/tables/HumanResources_Employee_130.html
 */
-select distinct
-       top 1
-       with ties
-       lower(t1.JobTitle),
-	   len(t1.JobTitle)
-  from [HumanResources].[Employee] as t1
- order by len(t1.JobTitle) desc;
+
+select  "jobTitleWithLen" = concat_ws(N' ', lower(q.JobTitle), len(q.JobTitle), NULL),
+        "jobTitleWithLen+" = lower(q.JobTitle) + NULL + cast(len(q.JobTitle) as nvarchar(10))
+  from (
+		select distinct
+			   top 1
+			   with ties
+			   "jobTitle" = lower(t1.JobTitle),
+			   "len" = len(t1.JobTitle) 
+		  from [HumanResources].[Employee] as t1
+		 order by len(t1.JobTitle) desc
+		 ) as q
 
 /*
 Напишите запрос, который вернет код продукта (первые лат. Буквы до дефиса атрибута t1.ProductNumber 
@@ -56,7 +61,7 @@ select t1.CreditCardID,
 	   stuff(t1.CardNumber, 5, 6, '******') as [cardNumber],	
 	   concat(expYear, format(ExpMonth, '00')) as [expPeriod]
   from [Sales].[CreditCard] as t1
- where left(t1.CardNumber, 4) in ('1111','3333', '4444', '5555', '7777')
+ where left(t1.CardNumber, 4) in (N'1111',N'3333', N'4444', N'5555', N'7777')
  order by t1.expYear desc, t1.ExpMonth desc;
 
 /*
