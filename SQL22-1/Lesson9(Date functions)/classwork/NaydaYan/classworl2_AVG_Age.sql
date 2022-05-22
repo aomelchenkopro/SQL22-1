@@ -1,3 +1,4 @@
+
   select  [Gender],
           AVG (datediff(year,BirthDate,GETDATE())) as [Age]
     from [HumanResources].[Employee]
