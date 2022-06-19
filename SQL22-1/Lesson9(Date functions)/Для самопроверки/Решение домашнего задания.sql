@@ -56,16 +56,18 @@ select t1.SalesOrderID,
 	   concat_ws(N' ', datediff(minute, t1.OrderDate, SYSDATETIME()), N'minutes') as [MinuteQty],
 	   concat_ws(N' ', datediff(second, t1.OrderDate, SYSDATETIME()), N'seconds') as [SecondQty]
   from [Sales].[SalesOrderHeader] as t1
- where t1.CreditCardApprovalCode like '8%'
-   and format( t1.OrderDate, 'yyyyMM', 'en-US') = N'201112'
+ where t1.CreditCardApprovalCode like '%8'
+   and format( t1.OrderDate, 'yyyyMM', 'en-US') = N'201212'
  order by t1.OrderDate desc;
 
 
 /*
 Задача 4*
 Напишите запрос, который вернет кол-во уникальных заказов и среднее кол-во дней прошедших с момента проведения заказа (OrderDate)
-до даты доставки клиенту (DueDate) в разрезе периода (OrderDate yyyymm) и типа оплаты (OnlineOrderFlag). Учитывайте только заказы с кодом подтверждения (CreditCardApprovalCode),
-которые начинаются с 1, и заканчиваются на 4 либо начинаются с 1, и заканчиваются на 0 либо начинаются с 1, и заканчиваются 5 и с пустым кодом обменного курса (CurrencyRateID).
+до даты доставки клиенту (DueDate) в разрезе периода (OrderDate yyyymm) и типа оплаты (OnlineOrderFlag). 
+Учитывайте только заказы с кодом подтверждения (CreditCardApprovalCode),
+которые начинаются с 1, и заканчиваются на 4 либо начинаются с 1, и заканчиваются на 0 либо начинаются
+с 1, и заканчиваются 5 и с пустым кодом обменного курса (CurrencyRateID).
 - Используется таблица: Sales.SalesOrderHeader
 - Рез. набор данных содержит: период (OrderDate yyyymm ), тип оплаты (OnlineOrderFlag),
 кол-во уникальных заказов, среднее кол-во дней (DueDate - OrderDate).
@@ -76,8 +78,9 @@ select "period" = format(h.OrderDate,  'yyyyMM', 'en-US'),
 	   "qty" = count(distinct h.SalesOrderID),
        "days" = avg(datediff(day,h.OrderDate, h.DueDate))
   from [Sales].[SalesOrderHeader] h
- where h.OrderDate between '20110101' and '20111231 23:59:59.00'
-   and ((h.CreditCardApprovalCode like '1%4' or h.CreditCardApprovalCode like '1%0') or (h.CreditCardApprovalCode like '1%5' and h.CurrencyRateID is null))
+ where --h.OrderDate between '20110101' and '20111231 23:59:59.00'
+    ((h.CreditCardApprovalCode like '1%4' or h.CreditCardApprovalCode like '1%0') 
+    or (h.CreditCardApprovalCode like '1%5' and h.CurrencyRateID is null))
  group by format(h.OrderDate,  'yyyyMM', 'en-US'),
           h.OnlineOrderFlag
  order by "period" desc;

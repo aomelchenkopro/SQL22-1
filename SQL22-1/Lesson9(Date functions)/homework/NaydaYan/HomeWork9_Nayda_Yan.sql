@@ -9,9 +9,10 @@
 - Результирующи набор данных содержит: год проведения заказа (без дублирующих строк)
 - Отсортировать рез. набор данных по году (по возрастанию)*/
 
-select distinct YEAR (OrderDate) as [OrderYear] 
+select distinct 
+       YEAR (OrderDate) as [OrderYear] 
  from [Sales].[SalesOrderHeader]
-order by OrderYear asc
+order by OrderYear asc;
 
 
 ---==========Task2===========================================================================
@@ -27,13 +28,14 @@ order by OrderYear asc
 - Результирующий набор данных содержит: период(yyyyMM) общая сумма заказов (SubTotal)*/
 
 
-select top 1 with ties format(OrderDate, 'yyyyMM') as [Period],
+select top 1 with ties 
+       format(OrderDate, 'yyyyMM') as [Period],
        sum(SubTotal) as [TotalSum]
  from [Sales].[SalesOrderHeader]
  --where OrderDate between '20110101' and '20130101'
  where YEAR(OrderDate) in (2011,2012)
- group by OrderDate
- Order by [TotalSum] desc
+ group by format(OrderDate, 'yyyyMM')
+ Order by [TotalSum] desc;
 
 
 --Вопрос по синтаксису второго параметра Format.... Было бы круто ещё раз пройтись
@@ -62,7 +64,7 @@ select SalesOrderID as [Order],
 		concat_ws (' ',DATEDIFF(SECOND,OrderDate,sysdatetime()),'Seconds') as [SECONDS]
  from [Sales].[SalesOrderHeader]
  Where CreditCardApprovalCode like '%8'
-       and format(OrderDate, 'yyyyMM') = '201212'
+       and format(OrderDate, 'yyyyMM') = '201212';
 
 
 ---==========Task4===========================================================================
@@ -83,7 +85,9 @@ select format(OrderDate,'yyyyMM') as [Period],
 	   avg(datediff(day,OrderDate,DueDate)) as [AvgDayAfterOrders]
   from Sales.SalesOrderHeader
   Where CurrencyRateID is null
-        and (CreditCardApprovalCode like '1%4' or CreditCardApprovalCode like '1%0' or CreditCardApprovalCode like  '1%5')
+        and (CreditCardApprovalCode like '1%4'
+		or CreditCardApprovalCode like '1%0'
+		or CreditCardApprovalCode like  '1%5')
   group by format(OrderDate,'yyyyMM'), OnlineOrderFlag
   order by [Period] desc
 
