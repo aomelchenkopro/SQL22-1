@@ -9,15 +9,16 @@ select top 1
        with ties upper(ltrim(JobTitle)) , COUNT(BusinessEntityID) as qtyemp 
  from HumanResources.Employee
  where BusinessEntityID not in (
-                                select BusinessEntityID from HumanResources.Employee
- where BusinessEntityID in (
+       --                         select BusinessEntityID from HumanResources.Employee
+-- where BusinessEntityID in (
 	                            select distinct soh.SalesPersonID 
        from [Sales].[SalesOrderHeader] as soh
-	  left join [Sales].[SalesOrderDetail] as sod on soh.SalesOrderID = sod.SalesOrderID
-	  left join [Production].[Product] as p on sod.ProductID = p.ProductID
+	  inner join [Sales].[SalesOrderDetail] as sod on soh.SalesOrderID = sod.SalesOrderID
+	  inner join [Production].[Product] as p on sod.ProductID = p.ProductID
   where  p.Color = N'Black'
    and soh.OrderDate between '20130101' and '20140101'
-   ))    group by JobTitle
+   and soh.SalesPersonID is not null
+  )    group by JobTitle
    order by qtyemp desc;
 
 
