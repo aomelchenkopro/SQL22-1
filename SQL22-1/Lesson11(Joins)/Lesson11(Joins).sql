@@ -147,3 +147,13 @@ select t1.BusinessEntityID,
   left join [Person].[EmailAddress] as t3 on t3.BusinessEntityID = t1.BusinessEntityID 
   left join [Person].[PersonPhone] as t4 on t4.BusinessEntityID = t1.BusinessEntityID;
 
+select top 1 
+       with ties 
+	   t2.JobTitle,
+       count (distinct t1.SalesOrderID) as qty
+  from [Sales].[SalesOrderHeader] as t1
+  join [HumanResources].[Employee] as t2 on t2.BusinessEntityID = t1.SalesPersonID
+ where t1.OrderDate between '20110101' and '20111231 23:59:59'
+ group by t2.JobTitle
+ order by qty desc;
+
