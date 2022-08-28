@@ -510,3 +510,101 @@ where HireDate between '20081201' and '20081207'
           e.HireDate
  order by  COUNT(distinct e.BusinessEntityID)  desc
 
+
+ -- Ян
+ use SQL221
+---------стандартные средства----------------
+with cte as 
+(
+select JobTitle,
+       HireDate,
+    COUNT(distinct BusinessEntityID) as [CountEmployee] 
+ from [HumanResources].[Employee]
+where HireDate between '20081201' and '20081207'
+ group by JobTitle,
+          HireDate
+ )
+ --select * from cte
+ select JobTitle,
+ sum(case HireDate when '2008-12-01' then CountEmployee end) as [2008-12-01],
+ sum(case HireDate when '2008-12-02' then CountEmployee end) as [2008-12-02],
+ sum(case HireDate when '2008-12-03' then CountEmployee end) as [2008-12-03],
+ sum(case HireDate when '2008-12-04' then CountEmployee end) as [2008-12-04],
+ sum(case HireDate when '2008-12-05' then CountEmployee end) as [2008-12-05],
+ sum(case HireDate when '2008-12-06' then CountEmployee end) as [2008-12-06],
+ sum(case HireDate when '2008-12-07' then CountEmployee end) as [2008-12-07]
+ from cte
+ group by JobTitle,HireDate
+ order by JobTitle asc;
+
+---------pivot----------------
+
+with cte as 
+(
+select JobTitle,
+       HireDate,
+    COUNT(distinct BusinessEntityID) as [CountEmployee] 
+ from [HumanResources].[Employee]
+where HireDate between '20081201' and '20081207'
+ group by JobTitle,
+          HireDate
+ )
+
+select *
+  from cte
+  pivot(sum([CountEmployee] ) for HireDate in  ([2008-12-01],[2008-12-02],[2008-12-03],[2008-12-04],
+                                                [2008-12-05],[2008-12-06],[2008-12-07])) as p order by JobTitle asc
+--==================================================================================================
+-- Ян
+---------отмена стандартными средствами----------------
+with cte as (
+select *
+  from (select e.HireDate,
+               e.JobTitle,
+     -- e.BusinessEntityID as [CountEmployee] 
+            count (distinct e.BusinessEntityID) as [CountEmployee] 
+               from [HumanResources].[Employee] as e
+               where e.HireDate between '20081201' and '20081207'
+      group by e.JobTitle,e.HireDate) as q
+  pivot(sum([CountEmployee] ) for HireDate in  ([2008-12-01],[2008-12-02],[2008-12-03],[2008-12-04],
+                                                [2008-12-05],[2008-12-06],[2008-12-07])) as w )
+
+--select * from cte
+
+
+select * 
+  from (
+       select  c.JobTitle,
+               d.HireDate,
+    case    d.HireDate  when '2008-12-01' then [2008-12-01] 
+                        when '2008-12-02' then [2008-12-02] 
+         when '2008-12-03' then [2008-12-03] 
+         when '2008-12-04' then [2008-12-04] 
+         when '2008-12-05' then [2008-12-05] 
+         when '2008-12-06' then [2008-12-06] 
+         when '2008-12-07' then [2008-12-07] end as [CountEmployee]
+  from cte c
+  cross join (values ('2008-12-01'), ('2008-12-02'), ('2008-12-03'),
+  ('2008-12-04'), ('2008-12-05'), ('2008-12-06'), ('2008-12-07')) as d (HireDate)
+  ) q 
+  where q.CountEmployee is not null;
+
+  ---------отмена unpivot----------------
+  with cte as (
+select *
+  from (select e.HireDate,
+               e.JobTitle,
+     -- e.BusinessEntityID as [CountEmployee] 
+            count (distinct e.BusinessEntityID) as [CountEmployee] 
+               from [HumanResources].[Employee] as e
+               where e.HireDate between '20081201' and '20081207'
+      group by e.JobTitle,e.HireDate) as q
+  pivot(sum([CountEmployee] ) for HireDate in  ([2008-12-01],[2008-12-02],[2008-12-03],[2008-12-04],
+                                                [2008-12-05],[2008-12-06],[2008-12-07])) as w )
+
+--select * from cte
+
+select *
+  from cte c
+unpivot (CountEmployee for HireDate in ([2008-12-01],[2008-12-02],[2008-12-03],[2008-12-04],
+                                                [2008-12-05],[2008-12-06],[2008-12-07])) as q
