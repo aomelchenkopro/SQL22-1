@@ -510,6 +510,7 @@ where HireDate between '20081201' and '20081207'
           e.HireDate
  order by  COUNT(distinct e.BusinessEntityID)  desc
 
+
  -- Ян
  use SQL221
 ---------стандартные средства----------------
