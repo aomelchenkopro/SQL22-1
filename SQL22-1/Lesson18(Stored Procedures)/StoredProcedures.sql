@@ -1,4 +1,6 @@
-﻿/*
+﻿
+SET XACT_ABORT ON;  
+/*
 Реализовать хранимую процедуру для расчета общей суммы продаж по сотруднику
 - Используется таблица [Sales].[SalesOrderHeader]
 */
@@ -39,3 +41,64 @@ END;
 DECLARE @Total MONEY;
 EXECUTE CALCULATE_TOTAL_SALES 279, '20110101 00:00:00', '20111231 23:59:59',  @Total OUTPUT;
 SELECT @Total;
+
+--==================================================================================================
+IF OBJECT_ID('[SQL221].[dbo].[CHANGE_DEPARTMENT]', 'p') IS NOT NULL DROP PROCEDURE CHANGE_DEPARTMENT;
+GO
+CREATE PROCEDURE CHANGE_DEPARTMENT 
+(
+@BusinessEntityID INT,
+@DepartmentID     INT
+) AS
+BEGIN
+	BEGIN TRY
+
+			BEGIN TRANSACTION
+		
+			-- Close current department
+			UPDATE [HumanResources].[EmployeeDepartmentHistory]
+			   SET EndDate = SYSDATETIME(),
+				   ModifiedDate = SYSDATETIME()
+			 WHERE BusinessEntityID = @BusinessEntityID
+			   AND EndDate IS NULL;
+
+			-- Open a new one
+			INSERT INTO [HumanResources].[EmployeeDepartmentHistory]
+			([BusinessEntityID], [DepartmentID], [ShiftID], [StartDate],
+			[EndDate], [ModifiedDate])
+			VALUES (@BusinessEntityID, @DepartmentID, 1, SYSDATETIME(), NULL, SYSDATETIME());
+
+			PRINT('primary key')
+		
+			COMMIT TRANSACTION;
+
+		END TRY
+		BEGIN CATCH
+			   IF (XACT_STATE()) = -1  
+				BEGIN  
+					PRINT 'The transaction is in an uncommittable state.' +  
+						  ' Rolling back transaction.'  
+					ROLLBACK TRANSACTION;  
+				END;
+
+				 IF (XACT_STATE()) = 1  
+				BEGIN  
+					PRINT 'The transaction is committable.' +   
+						  ' Committing transaction.'  
+					COMMIT TRANSACTION;     
+				END;  
+		END CATCH
+
+END;
+
+--===========================================================================
+
+
+ROLLBACK TRAN
+
+EXECUTE CHANGE_DEPARTMENT 18, 3
+
+SELECT *
+  FROM [HumanResources].[EmployeeDepartmentHistory]
+ WHERE BusinessEntityID = 18
+
