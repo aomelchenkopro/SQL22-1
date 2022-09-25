@@ -12,7 +12,7 @@ CREATE FUNCTION dbo.ReturnAVGOrder (@BusinessEntityID int)
 	RETURNS numeric(15,2) AS
 	 BEGIN
 		DECLARE @OrderAVG numeric(15,2);
-			SET @OrderAVG = (Select convert (numeric(15,2),AVG(r.countorder)) as asdasdasd
+			SET @OrderAVG = (Select AVG(convert(numeric(15,2), countorder) 
                                from (
                                      select SalesPersonID,
                                             FORMAT(OrderDate,'yyyyMM', 'en-US') as mounth,
@@ -25,3 +25,11 @@ CREATE FUNCTION dbo.ReturnAVGOrder (@BusinessEntityID int)
 GO
  --Check 
  SELECT dbo.ReturnAVGOrder (279)
+
+
+
+ select e.BusinessEntityID,
+         dbo.ReturnAVGOrder(e.BusinessEntityID)
+   from [HumanResources].[Employee] e
+ where dbo.ReturnAVGOrder(e.BusinessEntityID) is not null
+ order by dbo.ReturnAVGOrder(e.BusinessEntityID) desc
