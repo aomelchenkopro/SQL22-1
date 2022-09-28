@@ -14,13 +14,14 @@ CREATE TRIGGER Sales.PQTY ON [Sales].[SalesOrderDetail]
 
 		DECLARE @Result INT;
 		
+		-- The list of unique product id 
 		WITH ID AS
-		(
+		(   
 			SELECT DISTINCT 
 				   ProductID
 			  FROM inserted
 		),
-
+		-- The quantity of product units on the stock per productid 
 	     Inventory AS
 		(
 			SELECT P.ProductID,
@@ -29,7 +30,7 @@ CREATE TRIGGER Sales.PQTY ON [Sales].[SalesOrderDetail]
 		     INNER JOIN [Production].[ProductInventory] P ON P.ProductID = U.ProductID
 		     GROUP BY P.ProductID
 		),
-
+		-- The quantity of product units that were ordered per productid 
 		Orders AS
 		(
 			SELECT I.ProductID,
@@ -37,7 +38,7 @@ CREATE TRIGGER Sales.PQTY ON [Sales].[SalesOrderDetail]
 		      FROM inserted I 
 			 GROUP BY I.ProductID 
 		),
-
+		-- Compare quantity
 		Comparation AS
 		(
 			SELECT COUNT(*) AS R
