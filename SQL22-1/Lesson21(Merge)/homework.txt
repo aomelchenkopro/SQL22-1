@@ -1,6 +1,6 @@
 
 Напишите запрос для слияния данных двух таблиц [YourSchema].[stgCustomer] и [YourSchema].[Customer].
-Удалите строки из target таблицы, которы нет в таблице source.
+Удалите строки из target таблицы, которы нет в таблице source. Внесите результаты слияния в таблицу [YourSchema].AuditLog.
 - Задействуйте инструкцию merge
 
 
@@ -34,3 +34,19 @@ CREATE TABLE [YourSchema].[Customer](
 INSERT INTO [YourSchema].[Customer](CustomerID, PersonID, StoreID, TerritoryID)
 	VALUES(29494, 311, 312, 6),
 	      (29495, 313, 314, 8);
+
+
+CREATE TABLE [YourSchema].AuditLog(
+       logID           BIGINT IDENTITY(1, 1),
+	   [Action]        CHAR(6),
+	   oldCustomerID   INT,
+	   newCustomerID   INT,
+       oldPersonID     INT,
+	   newPersonID     INT,
+	   oldStoreID      INT,
+	   newStoreID      INT,
+	   oldTerritoryID  INT,
+	   newTerritoryID  INT,
+	   oldModifiedDate DATETIME,
+	   newModifiedDate DATETIME
+);

@@ -31,11 +31,31 @@ CREATE TABLE [aomelchenko].[Customer](
 	   ModifiedDate DATETIME DEFAULT SYSDATETIME()
 );
 
-INSERT INTO [AOMELCHENKO].[Customer](CustomerID, PersonID, StoreID, TerritoryID)
+INSERT INTO [aomelchenko].[Customer](CustomerID, PersonID, StoreID, TerritoryID)
 	VALUES(29494, 311, 312, 6),
 	      (29495, 313, 314, 8);
 
 
+CREATE TABLE [aomelchenko].AuditLog(
+       logID           BIGINT IDENTITY(1, 1),
+	   [Action]        CHAR(6),
+	   oldCustomerID   INT,
+	   newCustomerID   INT,
+       oldPersonID     INT,
+	   newPersonID     INT,
+	   oldStoreID      INT,
+	   newStoreID      INT,
+	   oldTerritoryID  INT,
+	   newTerritoryID  INT,
+	   oldModifiedDate DATETIME,
+	   newModifiedDate DATETIME
+);
+
+
+INSERT INTO aomelchenko.AuditLog([Action], oldCustomerID, newCustomerID, oldPersonID, newPersonID, oldStoreID, newStoreID,
+oldTerritoryID, newTerritoryID, oldModifiedDate, newModifiedDate)
+SELECT M.*
+  FROM (
 MERGE [aomelchenko].[Customer] as tgt
 USING [aomelchenko].[stgCustomer] as src		
    ON tgt.CustomerID = src.CustomerID
@@ -50,14 +70,18 @@ USING [aomelchenko].[stgCustomer] as src
   INSERT(CustomerID, PersonID, StoreID, TerritoryID)
   VALUES(src.CustomerID, src.PersonID, src.StoreID, src.TerritoryID)
 	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
-
-
-
-
-
-
-
-
+		DELETE
+	OUTPUT $action as [action],
+	       deleted.CustomerID as oldCustomerID,
+	       inserted.CustomerID as newCustomerID,
+           deleted.PersonID as oldPersonID,
+	       inserted.PersonID as newPersonID,
+	       deleted.StoreID as oldStoreID,
+	       inserted.StoreID as newStoreID,
+	       deleted.TerritoryID as oldTerritoryID,
+	       inserted.TerritoryID as newTerritoryID,
+		   deleted.ModifiedDate as oldModifiedDate,
+		   inserted.ModifiedDate as newModifiedDate
+) as M;
 
 
