@@ -196,3 +196,31 @@ SELECT *
 
 SELECT XACT_STATE();
 -- ------------------------------------------------------------------------------------------------------------
+/*
+Напишите запрос, возвращающий для каждого города наиболее продаваемый (по количеству заказов) товар.
+Учитывайте вероятность того что, одно и то же количество заказов могут иметь сразу несколько товаров.
+- Используются таблицы PRODUCTS, [dbo].[ORDERS], [dbo].[SALESREPS], [dbo].[OFFICES],
+- Задействуйте внутреннее объединение таблицы (синтаксис ANSI SQL-92).
+- Задействуйте ранжирующую функцию DENSE_RANK.
+- Задействуйте агрегатную функцию COUNT в режиме игнорирующем null.
+- Результирующий набор данных содержит город, идентификатор производителя товара, идентификатор товара, описание товара, количество заказов, ранг строки.
+*/
+SELECT * 
+  FROM (
+		SELECT f.CITY,
+			   p.MFR_ID,
+			   p.PRODUCT_ID,
+			   p.[DESCRIPTION],
+			   COUNT(DISTINCT o.ORDER_NUM) qty,
+			   DENSE_RANK()OVER(PARTITION BY f.CITY ORDER BY COUNT(DISTINCT o.ORDER_NUM) DESC) drnk
+		  FROM [dbo].[OFFICES] f
+		 INNER JOIN [dbo].[SALESREPS] s ON s.REP_OFFICE = f.OFFICE
+		 INNER JOIN [dbo].[ORDERS] o ON o.REP = s.EMPL_NUM
+		 INNER JOIN [dbo].[PRODUCTS] p ON p.MFR_ID = o.MFR
+									  AND p.PRODUCT_ID = o.PRODUCT
+		 GROUP BY f.CITY,
+				  p.MFR_ID,
+				  p.PRODUCT_ID,
+				  p.[DESCRIPTION]
+		 ) q
+  WHERE q.drnk = 1;
